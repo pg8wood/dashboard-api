@@ -1,6 +1,6 @@
 import Vapor
 
-final class ServiceController {
+final class ServicesController {
     
     func createHandler(_ req: Request) throws -> Future<Service> {
         // Decode request body JSON and save resulting Service to database.
@@ -32,7 +32,7 @@ final class ServiceController {
     }
 }
 
-extension ServiceController: RouteCollection {
+extension ServicesController: RouteCollection {
     func boot(router: Router) throws {
         let servicesRoute = router.grouped("dashboard", "services")
         servicesRoute.get(use: getAllHandler)
