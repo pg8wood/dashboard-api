@@ -32,6 +32,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(migrations)
     
     // Port configuration
-    let dashboardServiceConfig = NIOServerConfig.default(hostname: "patrickgatewood.com", port: 9000)
+    let dashboardServiceConfig = NIOServerConfig.default(hostname: "0.0.0.0", port: 9000)
     services.register(dashboardServiceConfig)
 }
