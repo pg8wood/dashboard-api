@@ -56,6 +56,8 @@ class ServiceMonitor: Vapor.Service {
         
         PingService.fetchServerStatus(url: service.url, eventLoop: self.eventLoop).futureResult.do { result in
             print("pinging service: \(service.url) | result: \(result)")
+            service.isOnline = true
+            service.save(on: self.request)
           
         }.catch { error in
             guard service.isOnline else {
