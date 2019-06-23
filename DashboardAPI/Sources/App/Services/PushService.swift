@@ -24,6 +24,10 @@ final class PushHandler: (PushService) {
         let pushPayload = "{\"aps\":\(pushString)}" // TODO do this wrapping as part of PushModel
         
         let certPassword: String = ""
+        guard !certPassword.isEmpty else {
+            fatalError("You need to set the push certificate password!")
+        }
+        
         let curlArguments: [String] = ["-v", "-d", pushPayload, "--cert", "/Users/patrickgatewood/Downloads/dashboard-push-cert.pem:\(certPassword)",  "-H", "apns-topic: com.willowtreeapps.patrick.gatewood.dashboard", "--http2",   "https://api.development.push.apple.com/3/device/\(deviceToken)"]
         
         ProcessRunner.shell("/usr/bin/curl", curlArguments)
