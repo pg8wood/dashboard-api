@@ -1,7 +1,7 @@
 import Vapor
 
 public func routes(_ router: Router) throws {
-    try router.register(collection: ServicesController())
+    try router.register(collection: ServiceController())
     try router.register(collection: UserController())
 
     // Basic "Hello, world!" example

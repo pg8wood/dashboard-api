@@ -11,6 +11,11 @@ protocol PushService {
 }
 
 final class PushHandler: (PushService) {
+    
+    static func ServiceDown(name: String) -> PushModel {
+        return PushModel(alert: "\(name) is offline!")
+    }
+    
     public static func sendPush(_ push: PushModel, to deviceToken: String) {
         // Can't do this in a Swifty way until Vapor supports HTTP/2
         

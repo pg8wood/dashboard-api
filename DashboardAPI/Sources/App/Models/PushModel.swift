@@ -6,6 +6,10 @@
 //
 
 struct PushModel : Codable {
+    static func ServiceDown(name: String) -> PushModel {
+        return PushModel(alert: "\(name) is offline!")
+    }
+    
     var alert: String
     var sound: String
     
