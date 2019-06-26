@@ -8,7 +8,7 @@
 import Vapor
 
 class ServiceMonitor: Vapor.Service {
-    private let pingInterval: TimeAmount = TimeAmount.seconds(1)
+    private let pingInterval: TimeAmount = TimeAmount.minutes(15)
     
     private let app: Application
     private var eventLoop: EventLoop {
@@ -23,14 +23,18 @@ class ServiceMonitor: Vapor.Service {
     
     func monitorAllServices() {
         app.eventLoop.scheduleRepeatedTask(initialDelay: TimeAmount.seconds(0), delay: pingInterval) { repeatedTask -> EventLoopFuture<Void> in
-            let allUsersFuture = User.query(on: self.request).decode(User.self).all()
             let allServicesFuture = Service.query(on: self.request).decode(Service.self).all()
             
             // TODO delete once services are associated with a particular user
             allServicesFuture.do { services in
                 services.forEach { service in
-                    fatalError("need push token")
-                    self.monitorServiceStatus(service, owner: User(pushToken: "push token here"))
+                    User.query(on: self.request).decode(User.self).first().do { user in
+                        guard let user = user else {
+                            fatalError("Need singleton user!")
+                        }
+                        
+                        self.monitorServiceStatus(service, owner: user)
+                    }
                 }
             }.catch { error in
                 print("Monitoring service failed: \(error)")
@@ -60,7 +64,7 @@ class ServiceMonitor: Vapor.Service {
             service.save(on: self.request)
           
         }.catch { error in
-            guard service.isOnline else {
+            guard service.isOnline ?? true else {
                 // The service hasn't come back online since we last pinged it
                 print("Service \(service.name) is still offline")
                 return
@@ -71,6 +75,7 @@ class ServiceMonitor: Vapor.Service {
             service.save(on: self.request)
             
             print("sending push")
+            // TODO: determine if push was sent today. Don't want to spam pushes every pingInterval!
             PushHandler.sendPush(PushHandler.ServiceDown(name: service.name), to: owner.pushToken)
         }
     }

@@ -5,12 +5,11 @@ final class Service: Codable {
     var id: Int?
     var name: String
     var url: String
-    var isOnline: Bool
+    var isOnline: Bool? = true
     
-    init(name: String, url: String, isOnline: Bool = true) {
+    init(name: String, url: String) {
         self.name = name
         self.url = url
-        self.isOnline = isOnline
     }
 }
 

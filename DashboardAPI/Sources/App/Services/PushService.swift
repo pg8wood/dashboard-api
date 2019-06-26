@@ -28,6 +28,7 @@ final class PushHandler: (PushService) {
             fatalError("You need to set the push certificate password!")
         }
         
+        // TODO store certificate elsewhere
         let curlArguments: [String] = ["-v", "-d", pushPayload, "--cert", "/Users/patrickgatewood/Downloads/dashboard-push-cert.pem:\(certPassword)",  "-H", "apns-topic: com.willowtreeapps.patrick.gatewood.dashboard", "--http2",   "https://api.development.push.apple.com/3/device/\(deviceToken)"]
         
         ProcessRunner.shell("/usr/bin/curl", curlArguments)
