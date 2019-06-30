@@ -24,16 +24,18 @@ class ServiceMonitor: Vapor.Service {
     func monitorAllServices() {
         app.eventLoop.scheduleRepeatedTask(initialDelay: TimeAmount.seconds(0), delay: pingInterval) { repeatedTask -> EventLoopFuture<Void> in
             let allServicesFuture = Service.query(on: self.request).decode(Service.self).all()
-            
-            // TODO delete once services are associated with a particular user
+
+            // TODO delete once services are associated with a particular user or multiple users are supported
             allServicesFuture.do { services in
                 services.forEach { service in
-                    User.query(on: self.request).decode(User.self).first().do { user in
-                        guard let user = user else {
-                            fatalError("Need singleton user!")
+                    User.query(on: self.request).decode(User.self).all().do { users in
+                        for user in users {
+                            guard let user = user else {
+                                fatalError("Need singleton user!")
+                            }
+                            
+                            self.monitorServiceStatus(service, owner: user)
                         }
-                        
-                        self.monitorServiceStatus(service, owner: user)
                     }
                 }
             }.catch { error in
